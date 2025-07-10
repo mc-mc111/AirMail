@@ -42,19 +42,13 @@ Currently works on desktops only. Mobile compatibility will be added soon.
 
 ---
 
-## Voice Command Guide
-You can find it on the main page too.         
----
-
----
-
-## Gesture Guide
-You can find it on the main page too.
+## Voice Command & Gesture Guide
+You can find them on their selected mode pages.         
 ---
 
 ## 📂 Project Structure
 
-handsfree-email/
+handsfree-email/  
 ├── static/  
 │ ├── gesture.js  
 │ ├── images/  
@@ -78,22 +72,22 @@ handsfree-email/
 
 ## 🛠 How to Run Locally
 
-1. Clone this repository:
-    git clone https://github.com/mc-mc111/AirMail
-    cd AirMail
+1. Clone this repository:  
+    git clone https://github.com/mc-mc111/AirMail  
+    cd AirMail  
 
-2. Create a Virtual Environment:
-    conda create -n AirMail python=3.10.18
-    conda activate AirMail
+2. Create a Virtual Environment:  
+    conda create -n AirMail python=3.10.18  
+    conda activate AirMail  
 
-3. Install dependencies:
-    pip install -r requirements.txt
+3. Install dependencies:  
+    pip install -r requirements.txt  
 
-4. Fill your app.secret_key in app.py (line 7):
-    You can use any random string as your wish
+4. Fill your app.secret_key in app.py (line 7):  
+    You can use any random string as your wish  
 
-5. Run the app:
-    python app.py
+5. Run the app:  
+    python app.py  
 
 ## 📸 Screenshots
 ![login page](screenshots/image.png)  

@@ -4,7 +4,7 @@ import ssl
 from email.message import EmailMessage
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Replace with a secure, random string in production
+app.secret_key = ''  # Replace with a secure, random string in production
 
 # ---------- LOGIN ----------
 @app.route('/', methods=['GET', 'POST'])

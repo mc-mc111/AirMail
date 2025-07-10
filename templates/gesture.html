@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gesture Controlled Email Sender</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      height: 100vh;
+      overflow: hidden;
+      color: #f2f2f2;
+    }
+
+    .main-container {
+      display: flex;
+      height: 100vh;
+      width: 100%;
+      flex-direction: row;
+    }
+
+    .left-half,
+    .right-half {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem;
+    }
+
+    .left-top {
+      display: flex;
+      flex: 1;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .video-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .video-container video {
+      width: 100%;
+      max-width: 340px;
+      border-radius: 12px;
+      border: 2px solid #666;
+      object-fit: cover;
+    }
+
+    .emoji-timer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #gesture-emoji {
+      font-size: 90px;
+      margin-bottom: 1rem;
+    }
+
+    #timer {
+      font-size: 26px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .left-bottom {
+      flex: 1;
+      margin-top: 1rem;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.5rem;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gesture-guide {
+      font-size: 18px;
+      text-align: center;
+      color: #eee;
+    }
+
+    .gesture-guide strong {
+      font-size: 24px;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .gesture-guide p {
+      margin: 0.6rem 0;
+    }
+
+    .form-wrapper {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+      backdrop-filter: blur(10px);
+    }
+
+    .form-wrapper h1 {
+      color: #fff;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-wrapper input,
+    .form-wrapper textarea {
+      width: 100%;
+      padding: 1rem;
+      margin-bottom: 1.2rem;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .form-wrapper input::placeholder,
+    .form-wrapper textarea::placeholder {
+      color: #ccc;
+    }
+
+    #status-text {
+      text-align: center;
+      font-weight: bold;
+      font-size: 20px;
+      margin-top: 1rem;
+      color: #d1d1d1;
+    }
+
+    @media (max-width: 1024px) {
+      .main-container {
+        flex-direction: column;
+        overflow-y: auto;
+      }
+
+      .left-half,
+      .right-half {
+        width: 100%;
+        height: auto;
+        padding: 1rem;
+      }
+
+      .left-top {
+        flex-direction: column;
+      }
+
+      .emoji-timer {
+        margin-top: 1rem;
+      }
+
+      #gesture-emoji {
+        font-size: 70px;
+      }
+
+      #timer {
+        font-size: 20px;
+      }
+
+      .gesture-guide {
+        font-size: 16px;
+      }
+    }
+
+    .flash {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: bold;
+      z-index: 9999;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    .flash.success {
+      background: linear-gradient(to right, #28a745cc, #28a745cc);
+      box-shadow: 0 0 12px #28a745, 0 0 20px #28a74555;
+    }
+
+    .flash.error {
+      background: linear-gradient(to right, #e74c3ccc, #e74c3ccc);
+      box-shadow: 0 0 12px #e74c3c, 0 0 20px #e74c3c55;
+    }
+
+    .logo {
+      transform: translate(165px, -55px);
+    }
+
+    .logout-form {
+      margin-top: 20px;
+    }
+
+    .logout-form button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(to right, #43cea2, #185a9d);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .logout-form button:hover {
+      opacity: 0.9;
+    }
+
+    .logout-btn {
+      background: linear-gradient(to right, #e74c3c, #c0392b);
+      padding: 14px;
+      width: 100%;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="flash-message-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div id="flash-message" class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+  </div>
+
+  <div class="main-container">
+    <div class="left-half">
+    <form id="email-form" class="form-wrapper" method="POST" action="{{ url_for('gesture') }}">
+        <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}"
+          style="width: 300px; height: 130px;">
+        <input type="text" id="receiver" name="receiver" placeholder="Receiver Email" />
+        <input type="text" id="subject" name="subject" placeholder="Subject" />
+        <textarea id="body" name="body" rows="6" placeholder="Body"></textarea>
+        <div id="status-text">Watching...</div>
+
+        <div style="margin-top: 10px; text-align: center;">
+          <a href="{{ url_for('logout') }}">
+            <button type="button" class="logout-btn"> Logout</button>
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <div class="right-half">
+      <div class="left-top">
+        <div class="video-container">
+          <video id="webcam" autoplay muted playsinline></video>
+        </div>
+        <div class="emoji-timer">
+          <div id="gesture-emoji">🖐️</div>
+          <div id="timer">0.0s</div>
+        </div>
+      </div>
+
+      <div class="left-bottom">
+        <div class="gesture-guide">
+          <strong>🖐️ Gesture Guide</strong>
+          <p>☝️ 1 finger → Receiver</p>
+          <p>✌️ 2 fingers → Subject</p>
+          <p>🤟 3 fingers → Body</p>
+          <p>👊 4 fingers → Delete / hold 2s to clear</p>
+          <p>🖐️ 5 fingers → Send / hold 2s to confirm</p>
+          <p>✊ 0 fingers → Stop Voice + Webcam</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script src="static/gesture.js"></script>
+
+  <script>
+    window.onload = () => {
+      const flash = document.getElementById('flash-message');
+      if (flash) {
+        setTimeout(() => {
+          flash.style.opacity = '0';
+          setTimeout(() => flash.remove(), 500);
+        }, 3000);
+      }
+
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(() => {
+          if (typeof initSpeechRecognition === 'function') {
+            initSpeechRecognition();
+          } else {
+            console.error('initSpeechRecognition is not defined.');
+          }
+        })
+        .catch(err => console.error("Mic permission denied:", err));
+    };
+  </script>
+</body>
+
+</html>

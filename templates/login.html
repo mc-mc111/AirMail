@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Gesture Email</title>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    .login-box {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2.5rem 2rem;
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .login-box h2 {
+      margin-bottom: 2rem;
+      text-align: center;
+      font-size: 26px;
+      color: #ffffff;
+    }
+
+    .login-box input[type="email"],
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 1rem;
+      margin-bottom: 1.2rem;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      outline: none;
+    }
+
+    .login-box input::placeholder {
+      color: #ccc;
+    }
+
+    .login-box button {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(to right, #43cea2, #185a9d);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .login-box button:hover {
+      opacity: 0.9;
+    }
+
+    .flash {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 14px 24px;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: bold;
+      z-index: 9999;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      animation: fadeIn 0.5s ease forwards;
+      transition: opacity 0.5s ease;
+    }
+
+    .flash.success {
+      background: linear-gradient(to right, #28a745cc, #28a745cc);
+      box-shadow: 0 0 12px #28a745, 0 0 20px #28a74555;
+    }
+
+    .flash.error {
+      background: linear-gradient(to right, #e74c3ccc, #e74c3ccc);
+      box-shadow: 0 0 12px #e74c3c, 0 0 20px #e74c3c55;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @media (max-width: 500px) {
+      .login-box {
+        padding: 2rem 1.2rem;
+      }
+    }
+        .logo {
+      transform: translate(15px, 0);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="flash-message-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <div class="login-box">
+    <img class = "logo" src="{{ url_for('static', filename='images/logo.png') }}" style="width: 300px; height: 130px;">
+    <h2>🔐 Login with Gmail</h2>
+    <form method="POST" action="/">
+      <input type="email" name="email" placeholder="Your Gmail address" required>
+      <input type="password" name="password" placeholder="App password" required>
+      <button type="submit">Login &rarr;</button>
+    </form>
+  </div>
+
+  <script>
+    window.onload = () => {
+      const flashes = document.querySelectorAll('.flash');
+      flashes.forEach(flash => {
+        setTimeout(() => {
+          flash.style.opacity = '0';
+          setTimeout(() => flash.remove(), 500);
+        }, 3000);
+      });
+    };
+  </script>
+</body>
+</html>

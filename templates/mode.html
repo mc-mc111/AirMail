@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Choose Mode</title>
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    .mode-box {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 3rem 2rem;
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      max-width: 450px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+    }
+
+    h2 {
+      font-size: 26px;
+      margin-bottom: 2.5rem;
+    }
+
+    .mode-box button {
+      width: 100%;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      background: linear-gradient(to right, #43cea2, #185a9d);
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.3s ease;
+    }
+
+    .mode-box button:hover {
+      transform: translateY(-2px);
+      opacity: 0.9;
+    }
+
+    .mode-box .logout {
+      background: linear-gradient(to right, #e74c3ccc, #e74c3ccc);
+      box-shadow: 0 0 12px #e74c3c, 0 0 20px #e74c3c55;
+    }
+
+    .flash {
+      position: absolute;
+      top: -70px;
+      right: 0;
+      left: 0;
+      margin: auto;
+      width: fit-content;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      animation: fadeInOut 4s forwards;
+    }
+
+    .flash.success {
+      background: linear-gradient(to right, #28a745cc, #28a745cc);
+      color: white;
+      box-shadow: 0 0 12px #28a745, 0 0 20px #28a74555;
+    }
+
+    .flash.error {
+      background: linear-gradient(to right, #e74c3ccc, #e74c3ccc);
+      color: white;
+      box-shadow: 0 0 12px #e74c3c, 0 0 20px #e74c3c55;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(-20px); }
+      10% { opacity: 1; transform: translateY(0); }
+      90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-20px); }
+    }
+
+    @media (max-width: 500px) {
+      .mode-box {
+        padding: 2rem 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mode-box">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}" style="width: 300px; height: 130px;">
+    <h2>🧠 Choose Interaction Mode</h2>
+
+    <form method="POST" action="{{ url_for('mode') }}">
+      <button type="submit" name="mode" value="voice">🎤 Voice-Controlled Mode</button>
+      <button type="submit" name="mode" value="gesture">🖐️ Gesture + Voice-Typed Mode</button>
+    </form>
+
+    <form method="get" action="{{ url_for('logout') }}">
+      <button type="submit" class="logout"> Logout</button>
+    </form>
+  </div>
+
+</body>
+</html>

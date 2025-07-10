@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>📧 Hands-Free Email Sender</title>
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    .container,
+    .commands {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+      transition: all 0.3s ease;
+    }
+
+    .container {
+      flex: 1 1 500px;
+      max-width: 550px;
+      box-sizing: border-box;
+    }
+
+    .commands {
+      flex: 0 0 300px;
+      color: #fff;
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 28px;
+      color: #ffffff;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 20px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
+      box-sizing: border-box;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #ccc;
+    }
+
+    .highlight {
+      border: 2px solid #43cea2 !important;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0px rgba(67, 206, 162, 0.4);
+      }
+
+      50% {
+        box-shadow: 0 0 10px rgba(67, 206, 162, 0.7);
+      }
+
+      100% {
+        box-shadow: 0 0 0px rgba(67, 206, 162, 0.4);
+      }
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 24px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(to right, #43cea2, #185a9d);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    #listening-icon {
+      display: none;
+      color: #ff4d4d;
+      font-weight: bold;
+      margin-top: 40px;
+      text-align: center;
+      font-size: 16px;
+      animation: listeningPulse 1.2s infinite;
+    }
+
+    @keyframes listeningPulse {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.6;
+        transform: scale(1.1);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    #current-action {
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: #eee;
+      margin-top: 10px;
+      min-height: 24px;
+    }
+
+    .commands h3 {
+      margin-top: 0;
+      font-size: 18px;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .commands ul {
+      padding-left: 18px;
+      font-size: 14px;
+      color: #fff;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(to right, #28a745cc, #28a745cc);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px #28a745, 0 0 20px #28a74555;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .commands {
+        max-width: 90%;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="flask-flash" data-message="{{ get_flashed_messages()[0] if get_flashed_messages() else '' }}"></div>
+
+  <div class="container">
+    <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}"
+      style="width: 300px; height: 130px; transform: translate(80px, -10px);">
+    <!--<h2>📧 Hands-Free Email Sender</h2>-->
+
+    <form id="emailForm" method="post">
+      <label for="receiver">Receiver Email:</label>
+      <input type="email" id="receiver" name="receiver" placeholder="example@email.com" required>
+
+      <label for="subject">Subject:</label>
+      <input type="text" id="subject" name="subject" placeholder="Enter subject">
+
+      <label for="body">Body:</label>
+      <textarea id="body" name="body" rows="6" placeholder="Enter your message..."
+        style="margin-bottom: -30px;"></textarea>
+
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 40px; margin-bottom: -3
+      0px;">
+        <div id="listening-icon" style="margin: 0;">🎤 Listening...</div>
+        <div id="current-action" style="margin-left: 20px;"></div>
+      </div>
+      <div style="display: flex; gap: 16px; margin-top: 20px;">
+        <button type="button" onclick="startListening()" style="flex: 1; min-width: 0;">
+          🎙 Start Voice Input
+        </button>
+
+        <a href="{{ url_for('logout') }}" style="flex: 1; min-width: 0;">
+          <button type="button" style="width: 100%; background: linear-gradient(to right, #e74c3c, #c0392b);">
+             Logout
+          </button>
+        </a>
+      </div>
+      <!--<button type="submit">📨 Send Email</button>-->
+    </form>
+  </div>
+
+  <div class="commands">
+    <h3>🎤 Voice Commands</h3>
+    <ul>
+      <li><strong>To Select Fields</strong></li>
+      <li>select receiver email</li>
+      <li>select subject</li>
+      <li>select body</li>  
+    </ul>
+    <ul>
+      <li><strong>To Clear Fields</strong></li>
+      <li>1) clear the field</li>
+      <li>2) confirm clear</li>
+    </ul>
+    <ul>
+      <li><strong>To Delete</strong></li>
+      <li>delete (remove last word)</li>
+    </ul>
+    <ul>
+      <li><strong>To Send Email</strong></li>
+      <li>1) send email</li>
+      <li>2) confirm send</li>
+    </ul>
+    <ul>
+      <li><strong>To Disable Mic</strong></li>
+      <li>stop listening</li>
+    </ul>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script>
+    let currentField = null;
+    let recognition;
+    let listening = false;
+    let manualStop = false;
+    let awaitingConfirmation = false;
+    let awaitingClearConfirmation = false;
+
+    function updateAction(text) {
+      document.getElementById('current-action').textContent = text;
+    }
+
+    function startListening() {
+      if (!('webkitSpeechRecognition' in window)) {
+        alert("Your browser doesn't support speech recognition.");
+        return;
+      }
+
+      recognition = new webkitSpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        document.getElementById("listening-icon").style.display = 'block';
+        listening = true;
+        manualStop = false;
+        updateAction("Listening...");
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        updateAction("Error: " + event.error);
+        if (!manualStop) setTimeout(() => startListening(), 1000);
+      };
+
+      recognition.onend = () => {
+        document.getElementById("listening-icon").style.display = 'none';
+        listening = false;
+        updateAction("");
+        if (!manualStop) setTimeout(() => startListening(), 1000);
+      };
+
+      recognition.onresult = function (event) {
+        const command = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+        console.log("Heard:", command);
+        handleCommand(command);
+      };
+
+      recognition.start();
+    }
+
+    function handleCommand(command) {
+      // Confirm clear
+      if (awaitingClearConfirmation && command.includes("confirm clear")) {
+        if (currentField) {
+          currentField.value = "";
+          speak("Field cleared");
+          updateAction("Cleared");
+          awaitingClearConfirmation = false;
+        }
+        return;
+      }
+
+      // Confirm send
+      if (awaitingConfirmation && command.includes("confirm send")) {
+        updateAction("Sending Email...");
+        document.getElementById("emailForm").submit();
+        showToast("Email sent successfully!");
+        speak("Email sent");
+        awaitingConfirmation = false;
+        return;
+      }
+
+      // Field selection
+      if (command.includes("select receiver email")) {
+        selectField(document.getElementById("receiver"));
+        speak("Receiver email field selected");
+        updateAction("Selected Receiver");
+      } else if (command.includes("select subject")) {
+        selectField(document.getElementById("subject"));
+        speak("Subject field selected");
+        updateAction("Selected Subject");
+      } else if (command.includes("select body")) {
+        selectField(document.getElementById("body"));
+        speak("Body field selected");
+        updateAction("Selected Body");
+
+        // Clear by voice
+      } else if (command.includes("clear the field" || "clear field" || "clear")) {
+        if (currentField) {
+          awaitingClearConfirmation = true;
+          speak("Are you sure you want to clear the field? Say confirm clear");
+          updateAction("Awaiting Clear Confirmation...");
+        }
+
+        // Delete last word
+      } else if (command.includes("delete")) {
+        if (currentField) {
+          const words = currentField.value.trim().split(/\s+/);
+          words.pop();
+          currentField.value = words.join(" ");
+          speak("Deleted last word");
+          updateAction("Deleted Last Word");
+        }
+
+        // Send
+      } else if (command.includes("send email")) {
+        awaitingConfirmation = true;
+        speak("Need confirmation. Can I send the mail?");
+        updateAction("Awaiting Confirmation...");
+
+        // Stop
+      } else if (command.includes("stop listening")) {
+        manualStop = true;
+        recognition.stop();
+        speak("Stopped listening");
+        updateAction("Stopped");
+
+        // Dictation
+      } else {
+        if (currentField) {
+          const processed = command
+            .replace(/attherate|at the rate|at-the-rate|at/gi, '@')
+            .replace(/ dot /g, '.')
+            .replace(/\s+/g, '');
+
+          if (currentField.id === "receiver") {
+            currentField.value += processed;
+          } else {
+            currentField.value += (currentField.value ? " " : "") + command;
+          }
+          updateAction("Typing...");
+        }
+      }
+    }
+
+    function selectField(field) {
+      document.querySelectorAll("input, textarea").forEach(el => el.classList.remove("highlight"));
+      currentField = field;
+      field.classList.add("highlight");
+    }
+
+    function speak(text) {
+      const synth = window.speechSynthesis;
+      synth.speak(new SpeechSynthesisUtterance(text));
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3000);
+    }
+
+    window.onload = function () {
+      const flash = document.getElementById('flask-flash');
+      const message = flash?.dataset?.message;
+      if (message) showToast(message);
+    };
+  </script>
+
+</body>
+
+</html>

@@ -55,16 +55,16 @@ You can find it on the main page too.
 ## 📂 Project Structure
 
 handsfree-email/
-├── static/
-│ ├── gesture.js
-│ ├── images/
-├── templates/
-│ ├── login.html
-│ ├── mode.html
-│ ├── voice.html
-│ └── gesture.html
-├── app.py
-└── requirements.txt
+├── static/  
+│ ├── gesture.js  
+│ ├── images/  
+├── templates/  
+│ ├── login.html  
+│ ├── mode.html  
+│ ├── voice.html  
+│ └── gesture.html  
+├── app.py  
+└── requirements.txt  
 
 
 ---
@@ -96,12 +96,12 @@ handsfree-email/
     python app.py
 
 ## 📸 Screenshots
-![login page](screenshots\image.png)
-![mode selection](screenshots\image-1.png)
-![voice controlled mode](screenshots\image-2.png)
-![gesture controlled mode](screenshots\image-3.png)
+![login page](screenshots/image.png)  
+![mode selection](screenshots/image-1.png)  
+![voice controlled mode](screenshots/image-2.png)  
+![gesture controlled mode](screenshots/image-3.png)  
 
 ## 🙋‍♂️ Author
-[Manicharan]
-Email: [manicharan.nulu1@gmail.com]
+[Manicharan]  
+Email: [manicharan.nulu1@gmail.com]  
 GitHub: [github.com/mc-mc111]
